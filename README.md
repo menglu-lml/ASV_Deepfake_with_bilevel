@@ -42,7 +42,7 @@ python3 testing_single_file.py --pre_trained_model_path='/path/to/the/saved/mode
 `ADD_A_00000000.wav` is a sample audio file, which is from the evaluation set of ADD2022 Challenge Dataset (Track2)
 
 ## Results
-The results of our model are obtained by training the single system without the ensemble or data augmentation. The result of top-5 single systems in ASVSpoof2019 Challenge and the two baselines are also included in the table for comparison, which are provided by the [overview paper of ASVSpoof2019 challenge](https://arxiv.org/pdf/2102.05889.pdf).
+The results of our model are obtained by training the single system without the ensemble or data augmentation. The result of top-5 **single systems** in ASVSpoof2019 Challenge and the two baselines are also included in the table for comparison, which are provided by the [overview paper of ASVSpoof2019 challenge](https://arxiv.org/pdf/2102.05889.pdf).
 |                   |    min-tDCF      |          EER[%]        |
 | -----------------|-------------:| -------------------------:|
 | Top-model01  |      0.1562       |           5.06          |
