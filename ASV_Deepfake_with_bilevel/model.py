@@ -180,6 +180,56 @@ class EmbedReduce(nn.Module):  # reduce the number of features
 
         return x.transpose(1, 2)  # (Batch, Feature, Channel)
 
+    
+class FeatureEncoder(nn.Module):    # extract embedding for melspectrogram
+    def __init__(self, encoder_channel, kernel, stride, padding):
+        super(featureEncoder, self).__init__()
+        
+        self.mel_transform = audioTran.MelSpectrogram(16000)
+        
+        self.conv1 = nn.Conv2d(1, encoder_channel[0], kernel, stride=stride, padding=padding)
+        nn.init.kaiming_uniform_(self.conv1.weight, a=0.1)
+        self.conv1.bias.data.zero_()
+        self.encode1 = nn.Sequential(self.conv1, nn.BatchNorm2d(encoder_channel[0]), nn.LeakyReLU(0.2))
+        
+        
+        self.conv2 = nn.Conv2d(encoder_channel[0], encoder_channel[1], kernel,stride=stride, padding=padding)
+        nn.init.kaiming_uniform_(self.conv2.weight, a=0.1)
+        self.conv2.bias.data.zero_()
+        self.encode2 = nn.Sequential(self.conv2,nn.BatchNorm2d(encoder_channel[1]), nn.LeakyReLU(0.2))
+        
+        
+        self.conv3 = nn.Conv2d(encoder_channel[1], encoder_channel[2], kernel,stride=stride, padding=padding)
+        nn.init.kaiming_uniform_(self.conv3.weight, a=0.1)
+        self.conv3.bias.data.zero_()
+        self.encode3 = nn.Sequential(self.conv3, nn.BatchNorm2d(encoder_channel[2]), nn.LeakyReLU(0.2))
+        
+        self.conv4 = nn.Conv2d(encoder_channel[2], encoder_channel[3], kernel, stride=stride, padding=padding)
+        nn.init.kaiming_uniform_(self.conv4.weight, a=0.1)
+        self.conv4.bias.data.zero_()
+        self.encode4 = nn.Sequential(self.conv4, nn.BatchNorm2d(encoder_channel[3]), nn.LeakyReLU(0.2))
+        
+
+    def forward(self, x):
+        x = self.mel_transform(x)
+        
+        batch = x.shape[0]
+        freq = x.shape[1]
+        frame = x.shape[2]
+        x = x.view(batch,1,freq,frame)
+        
+        x = self.encode1(x)
+        x = self.encode2(x)
+        x = self.encode3(x)
+        x = self.encode4(x)
+
+        x = x.flatten(2)
+        return x.transpose(1, 2) 
+    
+  
+
+
+##########      implementation of Transformer      ##########   
 
 class PositionalEncoding(nn.Module):
     def __init__(self, d_model, dropout, max_len=5000):
@@ -199,13 +249,9 @@ class PositionalEncoding(nn.Module):
 
     def forward(self, x):
         x = x + self.pe[:, : x.size(1)].requires_grad_(False) #freeze parameters for training
-        return self.dropout(x)    
-
-
-
-
-
-##########      implementation of Transformer      ##########   
+        return self.dropout(x)  
+    
+    
 class PositionwiseFeedForward(nn.Module):
     def __init__(self, d_model, d_hidden, dropout=0.1):
         super(PositionwiseFeedForward, self).__init__()
@@ -318,57 +364,6 @@ class Transformer(nn.Module):
         src_mask = torch.cat((torch.zeros(x.shape[0],1,1),torch.ones(x.shape[0],1,x.shape[1]-1)),dim=2).cuda()
         x = self.encoder(x,src_mask)
         return x
-
-
-
-
-
-
-class featureEncoder(nn.Module):    # extract embedding for melspectrogram
-    def __init__(self, encoder_channel, kernel, stride, padding):
-        super(featureEncoder, self).__init__()
-        
-        self.mel_transform = audioTran.MelSpectrogram(16000)
-        
-        self.conv1 = nn.Conv2d(1, encoder_channel[0], kernel, stride=stride, padding=padding)
-        nn.init.kaiming_uniform_(self.conv1.weight, a=0.1)
-        self.conv1.bias.data.zero_()
-        self.encode1 = nn.Sequential(self.conv1, nn.BatchNorm2d(encoder_channel[0]), nn.LeakyReLU(0.2))
-        
-        
-        self.conv2 = nn.Conv2d(encoder_channel[0], encoder_channel[1], kernel,stride=stride, padding=padding)
-        nn.init.kaiming_uniform_(self.conv2.weight, a=0.1)
-        self.conv2.bias.data.zero_()
-        self.encode2 = nn.Sequential(self.conv2,nn.BatchNorm2d(encoder_channel[1]), nn.LeakyReLU(0.2))
-        
-        
-        self.conv3 = nn.Conv2d(encoder_channel[1], encoder_channel[2], kernel,stride=stride, padding=padding)
-        nn.init.kaiming_uniform_(self.conv3.weight, a=0.1)
-        self.conv3.bias.data.zero_()
-        self.encode3 = nn.Sequential(self.conv3, nn.BatchNorm2d(encoder_channel[2]), nn.LeakyReLU(0.2))
-        
-        self.conv4 = nn.Conv2d(encoder_channel[2], encoder_channel[3], kernel, stride=stride, padding=padding)
-        nn.init.kaiming_uniform_(self.conv4.weight, a=0.1)
-        self.conv4.bias.data.zero_()
-        self.encode4 = nn.Sequential(self.conv4, nn.BatchNorm2d(encoder_channel[3]), nn.LeakyReLU(0.2))
-        
-
-    def forward(self, x):
-        x = self.mel_transform(x)
-        
-        batch = x.shape[0]
-        freq = x.shape[1]
-        frame = x.shape[2]
-        x = x.view(batch,1,freq,frame)
-        
-        x = self.encode1(x)
-        x = self.encode2(x)
-        x = self.encode3(x)
-        x = self.encode4(x)
-
-        x = x.flatten(2)
-        return x.transpose(1, 2) 
-
 
 
 class Net(nn.Module):
