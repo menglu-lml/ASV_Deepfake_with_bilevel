@@ -100,11 +100,11 @@ class SincConv(nn.Module):
         self.band_hz_ = nn.Parameter(torch.Tensor(np.diff(hz)).view(-1, 1))
 
         # Hamming window
-        n_lin=torch.linspace(0, (self.kernel_size/2)-1, steps=int((self.kernel_size/2))) # computing only half of the window
+        n_lin=torch.linspace(0, (self.kernel_size/2)-1, steps=int((self.kernel_size/2))) 
         self.window_=0.54-0.46*torch.cos(2*math.pi*n_lin/self.kernel_size);
 
         n = (self.kernel_size - 1) / 2.0
-        self.band_pass = 2*math.pi*torch.arange(-n, 0).view(1, -1) / self.sample_rate # Due to symmetry, I only need half of the time axes
+        self.band_pass = 2*math.pi*torch.arange(-n, 0).view(1, -1) / self.sample_rate 
 
  
 
@@ -122,7 +122,7 @@ class SincConv(nn.Module):
         f_times_t_low = torch.matmul(low, self.band_pass)
         f_times_t_high = torch.matmul(high, self.band_pass)
 
-        band_pass_left=((torch.sin(f_times_t_high)-torch.sin(f_times_t_low))/(self.band_pass/2))*self.window_ # Equivalent of Eq.4 of the reference paper (SPEAKER RECOGNITION FROM RAW WAVEFORM WITH SINCNET). I just have expanded the sinc and simplified the terms. This way I avoid several useless computations. 
+        band_pass_left=((torch.sin(f_times_t_high)-torch.sin(f_times_t_low))/(self.band_pass/2))*self.window_ 
         band_pass_center = 2*band.view(-1,1)
         band_pass_right= torch.flip(band_pass_left,dims=[1])
         
