@@ -183,7 +183,7 @@ class EmbedReduce(nn.Module):  # reduce the number of features
     
 class FeatureEncoder(nn.Module):    # extract embedding for melspectrogram
     def __init__(self, encoder_channel, kernel, stride, padding):
-        super(featureEncoder, self).__init__()
+        super(FeatureEncoder, self).__init__()
         
         self.mel_transform = audioTran.MelSpectrogram(16000)
         
