@@ -71,6 +71,12 @@ class ASVDataset(Dataset):
             'ASVspoof2019.{}.cm.{}.txt'.format(track, self.label_fname))
         print('label_file',self.label_fname)
         
+        if (self.dset_name == 'eval'):
+            cache_fname = 'cache_ASV_{}.npy'.format(self.dset_name)
+            self.cache_fname = os.path.join(cache_fname)
+        else:
+            cache_fname = 'cache_ASV_{}.npy'.format(self.dset_name)
+            self.cache_fname = os.path.join(cache_fname)
             
         if os.path.exists(self.cache_fname):
             self.data_x, self.data_y, self.data_sysid, self.files_meta = torch.load(self.cache_fname)
