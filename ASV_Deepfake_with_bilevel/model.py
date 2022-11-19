@@ -59,7 +59,7 @@ class SincConv(nn.Module):
     def to_hz(mel):
         return 700 * (10 ** (mel / 2595) - 1)
 
-    def __init__(self, out_channels, kernel_size=128, sample_rate=16000, in_channels=1,
+    def __init__(self, out_channels, kernel_size=80, sample_rate=16000, in_channels=1,
                  stride=1, padding=0, dilation=1, bias=False, groups=1, min_low_hz=50, min_band_hz=50):
 
         super(SincConv,self).__init__()
