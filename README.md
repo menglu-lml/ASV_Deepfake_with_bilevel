@@ -45,8 +45,8 @@ python3 testing_single_file.py --pre_trained_model_path='/path/to/the/saved/mode
 The results of our model are obtained by training the single system without the ensemble or data augmentation. The result of top-5 **single systems** in ASVSpoof2019 Challenge and the two baselines are also included in the table for comparison, which are provided by the [overview paper of ASVSpoof2019 challenge](https://arxiv.org/pdf/2102.05889.pdf).
 |                   |    min-tDCF      |          EER[%]        |
 | -----------------|-------------:| -------------------------:|
+| **V2-model with bi-level optimization training (Our model)**  |   **0.1555**   |   **5.65**       |
 | Top-model01  |      0.1562       |           5.06          |
-| **V2-model with bi-level optimization training (Our model)**  |   **0.1619**   |   **6.27**       |
 | Top-model02  |      0.1655       |           4.04          |
 | Top-model03  |      0.1894       |           7.01          |
 | Top-model04  |      0.1937       |           5.97          |
