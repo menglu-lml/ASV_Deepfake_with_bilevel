@@ -23,7 +23,7 @@ The default configurations are saved at `model_config.yaml`. If you would like c
 ### Testing on ASVSPOOF Dataset
 The followng command is for testing the performance of trained-model on the evaluation set.
 ```
-python testing_ASV.py --pre_trained_model_path="/path/to/the/saved/model.pth" --database_path="path/to/the/directory/of/ASVSPOOF2019/LA/database" --protocols_path="path/to/the/directory/of/ASVSPOOF2019/LA/protocols"
+python testing_ASV.py --pre_trained_model_path="E2E-pre_trained.pth" --database_path="path/to/the/directory/of/ASVSPOOF2019/LA/database" --protocols_path="path/to/the/directory/of/ASVSPOOF2019/LA/protocols"
 ```
 
 After running the previous testing command, an evaluation output file will be created and saved in the current directory, which is named as `eval_scores.txt`. 
