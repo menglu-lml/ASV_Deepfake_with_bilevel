@@ -193,18 +193,30 @@ if __name__ == '__main__':
 
     # Model Initialization
     model_A = Net(config['model'],device).to(device)
-    model_B = Net(config['model'],device).to(device)
+    select_param = [k for k, v in model_A.named_parameters() if k.startswith("FeatureEncoder")]
+    for name, param in model_A.named_parameters(): 
+        if name in select_param:
+            param.requires_grad = False
 
-    # Adam optimizer
-    optim_A = torch.optim.Adam(model_A.parameters(), lr = lr, betas=(0.9, 0.98), eps=1e-9)
+    optim_A = torch.optim.Adam(filter(lambda param: param.requires_grad, model_A.parameters()), 
+                               lr = lr, betas=(0.9, 0.98), eps=1e-9)
     lr_scheduler_A = LambdaLR(optimizer=optim_A,
-                              lr_lambda=lambda step: rate_A(step, d_model, factor=1, warmup=warmup),)
+                            lr_lambda=lambda step: rate(step, d_model, factor=1, warmup=config["warmup"]),)
+    select_buffer_vec = [k for k, v in model_A.state_dict().items() if k.startswith("FeatureEncoder")]
 
-    optim_B = torch.optim.Adam(model_B.parameters(), lr = lr, betas=(0.9, 0.98), eps=1e-9)
+
+    model_B = Net(config['model'],device).to(device)
+    select_param = [k for k, v in model_B.named_parameters() if k.startswith("FeatureEncoder")]
+    for name, param in model_B.named_parameters(): 
+        if name not in select_param:
+            param.requires_grad = False
+
+    optim_B = torch.optim.Adam(filter(lambda param: param.requires_grad, model_B.parameters()),
+                                 lr = lr, betas=(0.9, 0.98), eps=1e-9)
     lr_scheduler_B = LambdaLR(optimizer=optim_B,
-                              lr_lambda=lambda step: rate_B(step, num_training_steps=55000, num_cycles=0.5),)
+                            lr_lambda=lambda step: rate_cnn(step, num_training_steps=55000, num_cycles=0.5),)
 
-    select_param_vec = [k for k, v in model_A.state_dict().items() if k.startswith("featureEncoder")]
+
     
     # To save model
     tag = '{}_{}_{}_{}'.format(config['batch_size'], config['model']['num_filter'], config['model']['patch_embed'],lr)
@@ -256,8 +268,9 @@ if __name__ == '__main__':
         train_A_loader = DataLoader(train_A_set, batch_size=batch_size, shuffle=True, drop_last=True)
         train_B_loader = DataLoader(train_B_set, batch_size=batch_size, shuffle=True, drop_last=True)
         
-        index = train_epoch_with_swap(train_A_loader, train_B_loader, index,model_A, model_B, optim_A, optim_B, 
-                                        device, select_param_vec, scheduler_A = lr_scheduler_A, scheduler_B = lr_scheduler_B)
+        index = train_epoch_with_swap(train_A_loader, train_B_loader, index,model_A, model_B, lr, 
+                                             optim_A, optim_B, device, select_buffer_vec,
+                                             scheduler_A = lr_scheduler_A, scheduler_B = lr_scheduler_B)
         
         if epoch < num_epochs-1:
             model_A_dict = model_A.state_dict()
