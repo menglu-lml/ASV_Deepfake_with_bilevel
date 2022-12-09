@@ -63,6 +63,6 @@ python ensemble.py "Test_Score_File/E2E.txt" "Test_Score_File/Two-Part.txt"
 ```
 Then, the performance metric of the ensemble model can be computed using 
 ```
-python tDCF_python/evaluate_tDCF_asvspoof19_eval_LA.py 'Test_Score_File/ensemble.txt'
+python tDCF_python/evaluate_tDCF_asvspoof19_eval_LA.py 'Test_Score_File/Ensemble.txt'
 ```
 
