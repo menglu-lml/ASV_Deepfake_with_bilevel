@@ -1,4 +1,4 @@
-epoch: 200
+epoch: 250
 samp_len: 64600
 batch_size: 32
 optimizer: Adam
@@ -21,20 +21,20 @@ model:
   max_pool_len: 3
 
   patch_size: 24
-  patch_embed: 512
+  patch_embed: 256
   seq_size: [1024,256,128]
   
   encoder_hidden: 1024
   num_block: 6
-  num_head: 8
+  num_head: 4
 
   #For encoder-decoder
-  encoder_channel: [64, 128, 256, 512]
+  encoder_channel: [64, 128, 256, 256]
   kernel: 3
   stride: 2
   padding: 1
 
-  gru_hidden: 1024
+  gru_hidden: 512
   gru_layer: 1
 
   mlp_size: [296, 256]
