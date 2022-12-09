@@ -14,6 +14,7 @@ from torch.utils.data import DataLoader
 from torchvision import transforms
 from torch.utils.data import Subset
 import torch.nn.functional as F
+from sklearn.metrics import f1_score
 
 from tqdm import tqdm
 
@@ -68,6 +69,7 @@ def evaluate(dataset, model, device, eval_output):
         score_list.extend(batch_score.tolist())
    
     print ('Testing Accuracy: {}'.format(100 * (num_correct / num_total)))
+    print ('F-SCORE: {}'.format(f1_score(true_y, y_pred)))
     
     with open(eval_output, 'w') as fh:
         for f, s, k, cm in zip(fname_list, sys_id_list, key_list, score_list):
