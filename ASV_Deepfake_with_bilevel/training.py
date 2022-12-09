@@ -107,7 +107,7 @@ def train_epoch_with_swap(train_A_loader, train_B_loader, idx, model_A, model_B,
     num_correct = 0.0
     model_A.train()
     
-    weight = torch.FloatTensor([1.0, 9.0]).to(device)
+    weight = torch.FloatTensor([1.0, 1.0]).to(device)
     CEloss = nn.CrossEntropyLoss(weight=weight)
     
     for train_A_set, train_B_set in tqdm(zip(train_A_loader,train_B_loader), total = len(train_A_loader)):
