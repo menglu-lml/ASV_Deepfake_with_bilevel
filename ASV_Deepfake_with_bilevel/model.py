@@ -386,7 +386,7 @@ class Net(nn.Module):
         self.seq_len = (model_args['num_filter']//model_args['patch_size'])*(self.feature_dim//model_args['patch_size'])
         self.EmbedReduce = EmbedReduce(current_len = self.seq_len, seq_size = model_args['seq_size'])
         
-        self.featureEncoder = featureEncoder(model_args['encoder_channel'], model_args['kernel'], 
+        self.FeatureEncoder = FeatureEncoder(model_args['encoder_channel'], model_args['kernel'], 
                                              model_args['stride'], model_args['padding'])
         
         
@@ -423,7 +423,7 @@ class Net(nn.Module):
         
 
         # extracting embedding features from Melspectrogram
-        x_2 = self.featureEncoder(x)
+        x_2 = self.FeatureEncoder(x)
 
         
         # combine two sets of features and pass to transformer for classification
