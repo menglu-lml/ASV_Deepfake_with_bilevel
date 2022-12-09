@@ -101,8 +101,8 @@ def validate(data_loader, model, device):
     return 100 * (num_correct / num_total)
 
 
-def train_epoch_with_swap(train_A_loader, train_B_loader, idx, model_A, model_B,
-                          optim_A, optim_B, device, select_param_vec, scheduler_A = None, scheduler_B = None):  
+def train_epoch_with_swap(train_A_loader, train_B_loader, idx, model_A, model_B, lr, 
+                          optim_A, optim_B, device, buffer_vec, scheduler_A = None, scheduler_B = None):
     running_loss = 0
     num_correct = 0.0
     model_A.train()
