@@ -55,3 +55,14 @@ The results of our model are obtained by training the single system without the 
 | Baseline01  |      0.2839       |           9.57          |
 | V2-model (Our model)  |      0.2931       |           15.38          |
 
+
+## Ensemble
+The ensemble model is to combine the probability scores of the proposed E2E model and Two-Part model using a weighted average with a ratio of 6:4 resectively. The score files from both proposed algorithms using the provided pre-trained model are included under the folder `Test_Score_File`. Run the following command to ensemble two models and result in an updated score file under the same folder.
+```
+python ensemble.py "Test_Score_File/E2E.txt" "Test_Score_File/Two-Part.txt"
+```
+Then, the performance metric of the ensemble model can be computed using 
+```
+python tDCF_python/evaluate_tDCF_asvspoof19_eval_LA.py 'Test_Score_File/ensemble.txt'
+```
+
