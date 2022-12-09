@@ -16,6 +16,8 @@ import torch.nn.functional as F
 from torch.optim.lr_scheduler import LambdaLR
 from tensorboardX import SummaryWriter
 from tqdm import tqdm
+import argparse 
+from sklearn.model_selection import KFold
 
 
 def pad(x, max_len = 64600):
@@ -144,8 +146,8 @@ def train_epoch_with_swap(train_A_loader, train_B_loader, idx, model_A, model_B,
         # update model_B with the parameter value from model_A
         model_A_dict = model_A.state_dict()
         model_B_dict = model_B.state_dict()
-        param_dict = {k: v for k, v in model_A_dict.items() if k not in select_param_vec}
-        model_B_dict.update(param_dict)
+        buffer_dict = {k: v for k, v in model_A_dict.items() if k not in buffer_vec}
+        model_B_dict.update(buffer_dict)
         model_B.load_state_dict(model_B_dict)
         model_B.train()
         
@@ -190,6 +192,11 @@ if __name__ == '__main__':
     num_epochs = config['epoch']
     lr = config['lr']
     warmup = config['warmup']  
+    batch_size = config['batch_size']
+    d_model = config['model']['patch_embed']
+    
+    kfold = KFold(n_splits = config['data']['k_fold'], shuffle=True)
+    train_fold_list = list(kfold.split(list(range(config['data']['num_method']))))
 
     # Model Initialization
     model_A = Net(config['model'],device).to(device)
@@ -201,7 +208,7 @@ if __name__ == '__main__':
     optim_A = torch.optim.Adam(filter(lambda param: param.requires_grad, model_A.parameters()), 
                                lr = lr, betas=(0.9, 0.98), eps=1e-9)
     lr_scheduler_A = LambdaLR(optimizer=optim_A,
-                            lr_lambda=lambda step: rate(step, d_model, factor=1, warmup=config["warmup"]),)
+                            lr_lambda=lambda step: rate_A(step, d_model, factor=1, warmup=config["warmup"]),)
     select_buffer_vec = [k for k, v in model_A.state_dict().items() if k.startswith("FeatureEncoder")]
 
 
@@ -214,7 +221,7 @@ if __name__ == '__main__':
     optim_B = torch.optim.Adam(filter(lambda param: param.requires_grad, model_B.parameters()),
                                  lr = lr, betas=(0.9, 0.98), eps=1e-9)
     lr_scheduler_B = LambdaLR(optimizer=optim_B,
-                            lr_lambda=lambda step: rate_cnn(step, num_training_steps=55000, num_cycles=0.5),)
+                            lr_lambda=lambda step: rate_B(step, num_training_steps=55000, num_cycles=0.5),)
 
 
     
